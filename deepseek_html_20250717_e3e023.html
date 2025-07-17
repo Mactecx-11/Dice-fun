@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secret Task Dice Game</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #ffc2d1, #ffb3c6, #ff8fab, #fb6f92);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            position: relative;
+            padding-bottom: 30px;
+        }
+        
+        header {
+            background: linear-gradient(to right, #d74177, #e94b8b);
+            color: white;
+            text-align: center;
+            padding: 30px;
+            position: relative;
+            clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .dice-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            padding: 40px 20px;
+            gap: 30px;
+        }
+        
+        .dice-column {
+            flex: 1;
+            min-width: 280px;
+            background: linear-gradient(to bottom, #f8f4ff, #fff0f7);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #ffd6e7;
+        }
+        
+        .dice-column:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .dice-header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px dashed #ff7eb3;
+            position: relative;
+        }
+        
+        .dice-header h2 {
+            color: #d74177;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dice-icon {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            display: block;
+            color: #e94b8b;
+            text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dice {
+            width: 140px;
+            height: 140px;
+            margin: 0 auto 30px;
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            border-radius: 25px;
+            box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.1), 
+                        -8px -8px 20px rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 4.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .dice:hover {
+            transform: scale(1.08);
+            box-shadow: 12px 12px 25px rgba(0, 0, 0, 0.15), 
+                       -12px -12px 25px rgba(255, 255, 255, 0.9);
+        }
+        
+        .dice.rolling {
+            animation: rollDice 0.8s ease-out;
+        }
+        
+        @keyframes rollDice {
+            0% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(90deg) scale(1.1); }
+            50% { transform: rotate(180deg) scale(1.2); }
+            75% { transform: rotate(270deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+        
+        .task-display {
+            background: white;
+            border-radius: 18px;
+            padding: 25px;
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #6a5acd;
+            border: 3px dashed #e94b8b;
+            transition: all 0.5s ease;
+            box-shadow: inset 0 0 15px rgba(233, 75, 139, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .dice-column.active .task-display {
+            background: #fff0f5;
+            box-shadow: inset 0 0 20px rgba(233, 75, 139, 0.15);
+        }
+        
+        .task-display::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+            opacity: 0.4;
+            z-index: 0;
+        }
+        
+        .task-display p {
+            position: relative;
+            z-index: 2;
+            padding: 15px;
+            line-height: 1.5;
+        }
+        
+        .controls {
+            padding: 20px;
+            text-align: center;
+            background: #f8f4ff;
+            border-top: 2px solid #ffd6e7;
+            margin: 0 40px;
+            border-radius: 15px;
+        }
+        
+        .btn {
+            background: linear-gradient(to right, #e94b8b, #d74177);
+            color: white;
+            border: none;
+            padding: 16px 45px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 6px 18px rgba(233, 75, 139, 0.4);
+            margin: 0 12px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: 0.5s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(233, 75, 139, 0.6);
+        }
+        
+        .btn:active {
+            transform: translateY(2px);
+        }
+        
+        .btn-roll-all {
+            background: linear-gradient(to right, #8e44ad, #9b59b6);
+        }
+        
+        .instructions {
+            text-align: center;
+            padding: 25px 40px 10px;
+            color: #6a5acd;
+            font-size: 1.1rem;
+        }
+        
+        .instructions p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #888;
+            font-size: 0.95rem;
+            margin-top: 10px;
+        }
+        
+        .dice-label {
+            display: block;
+            margin-top: 10px;
+            font-style: italic;
+            color: #e94b8b;
+            font-weight: 500;
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            border-radius: 50%;
+            animation: fall linear forwards;
+            z-index: 1000;
+        }
+        
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        @media (max-width: 900px) {
+            .dice-container {
+                flex-direction: column;
+                padding: 30px 20px;
+            }
+            
+            .dice-column {
+                max-width: 500px;
+                margin: 0 auto;
+            }
+            
+            h1 {
+                font-size: 2.3rem;
+            }
+            
+            .dice {
+                width: 120px;
+                height: 120px;
+                font-size: 4rem;
+            }
+            
+            .btn {
+                padding: 14px 30px;
+                margin: 5px;
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-dice"></i> Secret Task Dice</h1>
+            <p class="subtitle">Roll a dice to reveal a fun task! Tasks are kept secret until you roll</p>
+        </header>
+        
+        <div class="dice-container">
+            <!-- Dice 1: Creative Activities -->
+            <div class="dice-column" id="dice1">
+                <div class="dice-header">
+                    <i class="dice-icon fas fa-palette"></i>
+                    <h2>Creative Fun</h2>
+                    <span class="dice-label">Singing, Dancing, Drawing, etc.</span>
+                </div>
+                <div class="dice" onclick="rollDice(1)">
+                    🎲
+                </div>
+                <div class="task-display" id="result1">
+                    <p>Click the dice to reveal your task!</p>
+                </div>
+            </div>
+            
+            <!-- Dice 2: Social Fun -->
+            <div class="dice-column" id="dice2">
+                <div class="dice-header">
+                    <i class="dice-icon fas fa-comments"></i>
+                    <h2>Social Fun</h2>
+                    <span class="dice-label">Makeup, Gossips, Flirting, etc.</span>
+                </div>
+                <div class="dice" onclick="rollDice(2)">
+                    🎲
+                </div>
+                <div class="task-display" id="result2">
+                    <p>Click the dice to reveal your task!</p>
+                </div>
+            </div>
+            
+            <!-- Dice 3: Flirty Fun -->
+            <div class="dice-column" id="dice3">
+                <div class="dice-header">
+                    <i class="dice-icon fas fa-heart"></i>
+                    <h2>Flirty Fun</h2>
+                    <span class="dice-label">Cuddling, Jokes, Signals, etc.</span>
+                </div>
+                <div class="dice" onclick="rollDice(3)">
+                    🎲
+                </div>
+                <div class="task-display" id="result3">
+                    <p>Click the dice to reveal your task!</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <p><i class="fas fa-star"></i> Tasks are kept secret until you roll the dice! Each dice has its own set of fun activities.</p>
+            <p><i class="fas fa-lightbulb"></i> Click on individual dice or use the Roll All button below to get multiple tasks at once!</p>
+        </div>
+        
+        <div class="controls">
+            <button class="btn btn-roll-all" onclick="rollAllDice()">
+                <i class="fas fa-random"></i> Roll All Dice
+            </button>
+            <button class="btn" onclick="resetAll()">
+                <i class="fas fa-redo"></i> Reset All
+            </button>
+        </div>
+        
+        <footer>
+            <p>Created with ❤️ | Secret Task Dice Game | Tasks revealed only when rolled!</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Task arrays for each dice (kept secret until rolled)
+        const tasks1 = [
+            "Sing your favorite song out loud for 1 minute",
+            "Do a 30-second dance performance - record it!",
+            "Draw a quick self-portrait with your non-dominant hand",
+            "Write a short poem about your day in under 3 minutes",
+            "Go for a quick swim (or simulate swimming motions if you can't)",
+            "Run in place for 1 minute as fast as you can"
+        ];
+        
+        const tasks2 = [
+            "Try a new makeup look you've never done before",
+            "Share some light, fun gossip with a friend",
+            "Playfully flirt with someone (with their consent!)",
+            "Roast your best friend (gently!) in a funny way",
+            "Shout your favorite phrase loudly three times",
+            "Pretend to be someone else for the next 5 minutes"
+        ];
+        
+        const tasks3 = [
+            "Flirt playfully with someone you find attractive",
+            "Cuddle with a friend or partner for 2 minutes",
+            "Crack a clever double-meaning joke to a friend",
+            "Give a 'misleading signal' to a male best friend",
+            "Take an extra-long, relaxing bath tonight",
+            "Do something sexy in front of your closest female friend"
+        ];
+        
+        // Roll a specific dice
+        function rollDice(diceNum) {
+            const diceElement = document.querySelector(`#dice${diceNum} .dice`);
+            const resultElement = document.getElementById(`result${diceNum}`);
+            const diceColumn = document.getElementById(`dice${diceNum}`);
+            
+            // Add rolling animation
+            diceElement.classList.add('rolling');
+            diceColumn.classList.add('active');
+            resultElement.innerHTML = "<p>Rolling...</p>";
+            
+            // Remove animation after delay
+            setTimeout(() => {
+                diceElement.classList.remove('rolling');
+                
+                // Get random task based on dice number
+                let randomTask;
+                switch(diceNum) {
+                    case 1:
+                        randomTask = tasks1[Math.floor(Math.random() * tasks1.length)];
+                        break;
+                    case 2:
+                        randomTask = tasks2[Math.floor(Math.random() * tasks2.length)];
+                        break;
+                    case 3:
+                        randomTask = tasks3[Math.floor(Math.random() * tasks3.length)];
+                        break;
+                }
+                
+                // Display result
+                resultElement.innerHTML = `<p>${randomTask}</p>`;
+                
+                // Add confetti effect
+                createConfetti(diceColumn);
+            }, 800);
+        }
+        
+        // Roll all dice at once
+        function rollAllDice() {
+            rollDice(1);
+            setTimeout(() => rollDice(2), 300);
+            setTimeout(() => rollDice(3), 600);
+        }
+        
+        // Reset all dice
+        function resetAll() {
+            for(let i = 1; i <= 3; i++) {
+                const resultElement = document.getElementById(`result${i}`);
+                resultElement.innerHTML = "<p>Click the dice to reveal your task!</p>";
+                document.getElementById(`dice${i}`).classList.remove('active');
+            }
+        }
+        
+        // Create confetti effect
+        function createConfetti(container) {
+            const colors = ['#ff6b9d', '#e94b8b', '#d74177', '#ff8fab', '#fb6f92', '#ffb3c6'];
+            
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = '-10px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.width = Math.random() * 10 + 5 + 'px';
+                confetti.style.height = confetti.style.width;
+                confetti.style.animationDuration = Math.random() * 3 + 2 + 's';
+                
+                container.appendChild(confetti);
+                
+                // Remove confetti after animation
+                setTimeout(() => {
+                    confetti.remove();
+                }, 5000);
+            }
+        }
+    </script>
+</body>
+</html>
